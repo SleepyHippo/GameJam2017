@@ -3,7 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_Intensity("Gray Intensity", range(0.0,1.0)) = 0.5
+		_Intensity("Gray Intensity", range(0.0,1.0)) = 0
 	}
 	SubShader
 	{

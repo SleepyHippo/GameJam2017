@@ -127,13 +127,19 @@ namespace DWM {
             switch (_cell.type) {
                 case CellType.Root:
                     cellObject = Object.Instantiate(rootPrefab[_cell.style]);
+                    if (Application.isPlaying) {
+                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100));
+                    }
                     break;
                 case CellType.Branch:
                     cellObject = Object.Instantiate(branchPrefab[_cell.style]);
+                    if (Application.isPlaying) {
+                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100));
+                    }
                     break;
-//                case CellType.Ladder:
-//                    cellObject = Object.Instantiate(ladderPrefab);
-//                    break;
+                //                case CellType.Ladder:
+                //                    cellObject = Object.Instantiate(ladderPrefab);
+                //                    break;
                 case CellType.Item:
                     cellObject = Object.Instantiate(itemPrefab);
                     break;
