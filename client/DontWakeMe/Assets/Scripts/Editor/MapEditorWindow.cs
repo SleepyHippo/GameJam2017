@@ -85,7 +85,7 @@ public class MapEditorWindow : EditorWindow {
             && GUILayout.Button("Export data")) {
             ExportAllMapData();
         }
-        if (GUILayout.Button("Refresh")) {
+        if (GUILayout.Button("Reset(重置)")) {
             RemoveAllCellObject();
             Refresh();
             EditorSceneManager.MarkAllScenesDirty();
@@ -282,21 +282,29 @@ public class MapEditorWindow : EditorWindow {
 //    }
 
     void ExportAllMapData() {
-        var path = EditorUtility.SaveFilePanel(
-            "Create MapMapEditorData",
-            "Assets/StaticData/Resources",
-            "data.asset",
-            "asset");
-        if (string.IsNullOrEmpty(path)) {
-            return;
-        }
+//        var path = EditorUtility.SaveFilePanel(
+//            "Create MapMapEditorData",
+//            "Assets/StaticData/Resources",
+//            "data.asset",
+//            "asset");
+//        Debug.Log(path);
+//        if (string.IsNullOrEmpty(path)) {
+//            return;
+//        }
+        string path = "F:/_Work/gitRepos/GameJam2017/client/DontWakeMe/Assets/StaticData/Resources/data.asset";
         MapData mapData = ScriptableObject.CreateInstance<MapData>();
         mapData.width = MapContainer.Map.width;
         mapData.height = MapContainer.Map.height;
-        mapData.cells = MapContainer.Map.cells;
+        mapData.cells = new List<Cell>(MapContainer.Map.cells.Count);
+        for (int i = 0; i < MapContainer.Map.cells.Count; ++i) {
+            Cell cell = MapContainer.Map.cells[i];
+            mapData.cells.Add(new Cell(cell));
+        }
+//        mapData.cells = MapContainer.Map.cells;
         AssetDatabase.CreateAsset(mapData, Utilities.GetAssetPath(path));
-        Selection.activeObject = mapData;
+//        Selection.activeObject = mapData;
         AssetDatabase.SaveAssets();
+        MapContainer.data = AssetDatabase.LoadAssetAtPath<MapData>(Utilities.GetAssetPath(path));
     }
 
     int DrawIntField(string name, int value, int min, int max) {

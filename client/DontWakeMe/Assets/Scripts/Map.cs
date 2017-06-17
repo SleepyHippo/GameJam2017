@@ -54,6 +54,9 @@ namespace DWM {
         /// </summary>
         public int hp;
 
+        public Cell(Cell other) : this(other.x, other.y, other.type, other.branchId, other.groupId, other.hp, other.value) { 
+        }
+
         public Cell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
            Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
         }
@@ -98,13 +101,15 @@ namespace DWM {
         public void Deserilize(MapData _data) {
             this.width = _data.width;
             this.height = _data.height;
-            this.cells = _data.cells;
 
 //            cells = new Cell[width * height];
+            cells.Clear();
             cellIndexMap.Clear();
             for (int i = 0; i < _data.cells.Count; ++i) {
                 Cell cell = _data.cells[i];
-                cellIndexMap.Add(GetCellIndex(cell.x, cell.y), cell);
+                Cell newCell = new Cell(cell);
+                cells.Add(newCell);
+                cellIndexMap.Add(GetCellIndex(newCell.x, newCell.y), newCell);
             }
         }
 
