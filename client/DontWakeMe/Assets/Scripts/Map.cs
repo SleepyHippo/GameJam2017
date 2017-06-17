@@ -24,6 +24,7 @@ namespace DWM {
     public class Cell {
         public int x;
         public int y;
+
         /// <summary>
         /// 格子的类型
         /// </summary>
@@ -40,7 +41,7 @@ namespace DWM {
         public int branchId;
 
         /// <summary>
-        /// 树枝中的节点id，[0, infinite)
+        /// 树枝中的组id，[1, infinite)
         /// </summary>
         public int groupId;
 
@@ -54,11 +55,10 @@ namespace DWM {
         /// </summary>
         public int hp;
 
-        public Cell(Cell other) : this(other.x, other.y, other.type, other.branchId, other.groupId, other.hp, other.value) { 
-        }
+        public Cell(Cell other) : this(other.x, other.y, other.type, other.branchId, other.groupId, other.hp, other.value) { }
 
         public Cell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
-           Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
+            Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
         }
 
         public void Set(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
@@ -77,16 +77,79 @@ namespace DWM {
     public class Map {
         public int width;
         public int height;
-        public int faceWidth;
-        public int faceCount;
         public int landHeight;
         public List<Cell> cells = new List<Cell>();
         public Dictionary<int, Cell> cellIndexMap = new Dictionary<int, Cell>();
+
+        public Tree upTree;
+        public Tree botTree;
 
         public Map(MapData _data) {
             if (_data != null) {
                 Deserilize(_data);
             }
+        }
+
+        public void InitTree() {
+            upTree = new Tree();
+            botTree = new Tree();
+            for (int i = 0; i < cells.Count; ++i) {
+                Cell cell = cells[i];
+                if (cell.y > landHeight) {
+                    AddCellToTree(cell, upTree);
+                }
+                else if (cell.y < landHeight) {
+                    AddCellToTree(cell, botTree);
+                }
+            }
+            SetTreeBranchGroupMap(upTree);
+            SetTreeBranchGroupMap(botTree);
+        }
+
+        void AddCellToTree(Cell _cell, Tree _tree) {
+            while (_tree.branchs.Count < _cell.branchId) {
+                _tree.branchs.Add(new Branch());
+            }
+            Branch branch = _tree.branchs[_cell.branchId - 1];
+            branch.branchId = _cell.branchId;
+
+            while (branch.groups.Count < _cell.groupId) {
+                branch.groups.Add(new Group());
+            }
+            Group group = branch.groups[_cell.groupId];
+            group.branchGroupId = _cell.nodeId;
+            group.groupId = _cell.groupId;
+            group.value = _cell.value;
+            group.hp = _cell.hp;
+            group.cells.Add(_cell);
+        }
+
+        void SetTreeBranchGroupMap(Tree _tree) {
+            _tree.branchGroupMap.Clear();
+            for (int i = 0; i < _tree.branchs.Count; ++i) {
+                Branch branch = _tree.branchs[i];
+                for (int j = 0; j < branch.groups.Count; ++j) {
+                    Group group = branch.groups[j];
+                    _tree.branchGroupMap.Add(group.branchGroupId, group);
+                }
+            }
+        }
+
+        public Group AddHp(int _x, int _y, int _hp) {
+            Cell cell;
+            if (cellIndexMap.TryGetValue(GetCellIndex(_x, _y), out cell)) {
+                if (cell.y > landHeight) {
+                    Group group = upTree.branchGroupMap[cell.nodeId];
+                    group.AddHp(_hp);
+                    return group;
+                }
+                else if (cell.y < landHeight) {
+                    Group group = botTree.branchGroupMap[cell.nodeId];
+                    group.AddHp(_hp);
+                    return group;
+                }
+            }
+            return null;
         }
 
 //        public Map(int _faceWidth, int _height, int _faceCount = 4) {
@@ -101,6 +164,7 @@ namespace DWM {
         public void Deserilize(MapData _data) {
             this.width = _data.width;
             this.height = _data.height;
+            this.landHeight = _data.height / 2;
 
 //            cells = new Cell[width * height];
             cells.Clear();
@@ -166,9 +230,9 @@ namespace DWM {
 //            return GetCell(_x, _y) == null;
 //        }
 
-        public int GetFaceIndex(int _x) {
-            return _x / faceWidth;
-        }
+//        public int GetFaceIndex(int _x) {
+//            return _x / faceWidth;
+//        }
 
         public int GetCellIndex(int _x, int _y) {
             return _x + _y * width;

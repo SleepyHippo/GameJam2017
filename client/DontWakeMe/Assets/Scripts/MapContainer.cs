@@ -18,6 +18,11 @@ namespace DWM {
 
         public MapData data;
 
+        [Range(0, 100)]
+        public int waterValue = 10;
+        [Range(-100, 0)]
+        public int digValue = -10;
+
         public GameObject dirtPrefab;
         public GameObject rootPrefab;
         public GameObject branchPrefab;
@@ -42,9 +47,11 @@ namespace DWM {
 
         private List<GameObject> cellObjects = new List<GameObject>();
         private Dictionary<int, GameObject> cellObjectDic = new Dictionary<int, GameObject>();
+        private Dictionary<int, GameObject> branchGroupIdDic = new Dictionary<int, GameObject>();
 
         void Awake() {
             DrawMap();
+            Map.InitTree();
         }
 
         /// <summary>
@@ -81,8 +88,32 @@ namespace DWM {
         }
 
         public void RefreshCell(int _x, int _y) {
+            Cell cell = map.GetCell(_x, _y);
             RemoveCellObject(_x, _y);
-            DrawCellObject(map.GetCell(_x, _y));
+            DrawCellObject(cell);
+        }
+
+        public void Water(Vector3 _position) {
+            int x = Mathf.RoundToInt(_position.x);
+            int y = Mathf.RoundToInt(_position.y);
+            Group group = Map.AddHp(x, y, waterValue);
+            for (int i = 0; i < group.cells.Count; ++i) {
+                Cell cell = group.cells[i];
+                //特效
+                RefreshCell(cell.x, cell.y);
+            }
+        }
+
+        public void Dig(Vector3 _position) {
+            int x = Mathf.RoundToInt(_position.x);
+            int y = Mathf.RoundToInt(_position.y);
+            Group group = Map.AddHp(x, y, digValue);
+            for (int i = 0; i < group.cells.Count; ++i)
+            {
+                Cell cell = group.cells[i];
+                //特效
+                RefreshCell(cell.x, cell.y);
+            }
         }
 
         void DrawCellObject(Cell _cell) {
