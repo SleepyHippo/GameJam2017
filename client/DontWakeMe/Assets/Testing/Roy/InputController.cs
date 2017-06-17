@@ -15,13 +15,29 @@ public class InputController : MonoBehaviour {
 
     public bool IsUseGravity { get; set; }
 
+    private DWM.MapContainer mapContainer;
+
+
     // Use this for initialization
     void Start () {
         IsUseGravity = playerType != PlayerType.Player_02;
+        mapContainer = FindObjectOfType<DWM.MapContainer>();
     }
 
     // Update is called once per frame
     void Update () {
+        Move();
+        DoPee();
+    }
+
+    private void DoPee () {
+        if (Input.GetKey(KeyCode.Joystick1Button0)) {
+            Debug.Log("Pee");
+            mapContainer.Water(transform.position);
+        }
+    }
+
+    private void Move () {
         var x = Input.GetAxis("LeftAnalogHorizontal");
         var y = Input.GetAxis("LeftAnalogVertical");
 
