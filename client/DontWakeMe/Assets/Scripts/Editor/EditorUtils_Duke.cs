@@ -196,7 +196,7 @@ namespace Assets.GorGame.Editor {
         public static void DrawMarkAtScene(SceneView _sceneView, Vector3 _position)
         {
             Vector3 upPosition = _position;
-            upPosition.y += 100;
+            upPosition.z -= 5;
 
             Handles.color = Color.yellow;
             Handles.DrawLine(_position, upPosition);
