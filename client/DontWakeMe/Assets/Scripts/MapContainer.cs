@@ -43,7 +43,9 @@ namespace DWM {
         private List<GameObject> cellObjects = new List<GameObject>();
         private Dictionary<int, GameObject> cellObjectDic = new Dictionary<int, GameObject>();
 
-        void Awake() { }
+        void Awake() {
+            DrawMap();
+        }
 
         /// <summary>
         /// Refresh using data

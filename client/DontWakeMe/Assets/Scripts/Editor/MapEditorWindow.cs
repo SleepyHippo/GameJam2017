@@ -147,6 +147,8 @@ public class MapEditorWindow : EditorWindow {
         Repaint();
     }
 
+    private bool isPainting = false;
+
     void CustomSceneGUI(SceneView sceneView) {
         Vector3 mouseSelectPosition;
         if (Assets.GorGame.Editor.EditorUtils_Duke.GetMouseHitInfoInScene(sceneView, out _hitInfo, true, false)) {
@@ -177,7 +179,7 @@ public class MapEditorWindow : EditorWindow {
 
 
             //place current spawner at mouse
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.A) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.A) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 MapContainer.Map.SetCell(x, y, currentCellType, branchId, groupId, hp, value);
@@ -185,7 +187,7 @@ public class MapEditorWindow : EditorWindow {
                 e.Use();
                 EditorSceneManager.MarkAllScenesDirty();
             }
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.S) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.S) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 Cell cell = MapContainer.Map.GetCell(x, y);
@@ -200,7 +202,7 @@ public class MapEditorWindow : EditorWindow {
                     Debug.LogError("cell is null: " + x + " " + y);
                 }
             }
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.D) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.D) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 MapContainer.Map.RemoveCell(x, y);
