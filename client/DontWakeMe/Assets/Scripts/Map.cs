@@ -6,19 +6,33 @@
 //   purpose:   
 // *********************************************************************/
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DWM {
-//    public enum Owner {
-//        Down = 0,
-//        Up = 1,
-//    }
+    public enum CellType {
+//        NULL = 0,
+//        Dirt = 1,
+        Root = 2,
+        Branch = 3,
+        Ladder = 4,
+        Item = 5,
+    }
 
-    public struct Cell {
+    [Serializable]
+    public class Cell {
+        public int x;
+        public int y;
         /// <summary>
-        /// 唯一id，用于上下对应，构造函数时赋值，不要修改！
+        /// 格子的类型
         /// </summary>
-        public int id;
+        public CellType type;
+
+        /// <summary>
+        /// nodeId，用于对应Root和Branch，构造函数时赋值，不要修改！
+        /// </summary>
+        public int nodeId;
 
         /// <summary>
         /// 树枝id，[1,4]
@@ -28,7 +42,7 @@ namespace DWM {
         /// <summary>
         /// 树枝中的节点id，[0, infinite)
         /// </summary>
-        public int branchCellId;
+        public int groupId;
 
         /// <summary>
         /// 这个Cell的价值
@@ -40,11 +54,18 @@ namespace DWM {
         /// </summary>
         public int hp;
 
-        public Cell(int _branchId, int _branchCellId, int _hp, int _value) {
-            id = _branchId * 10000 + _branchCellId;
+        public Cell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
+           Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
+        }
+
+        public void Set(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
+            this.x = _x;
+            this.y = _y;
+            this.type = _type;
+            nodeId = _branchId * 10000 + _groupId;
             branchId = _branchId;
-            this.branchCellId = _branchCellId;
-//            this.owner = _owner;
+            this.groupId = _groupId;
+            //            this.owner = _owner;
             this.hp = _hp;
             this.value = _value;
         }
@@ -56,25 +77,89 @@ namespace DWM {
         public int faceWidth;
         public int faceCount;
         public int landHeight;
-        public Cell[] cells;
+        public List<Cell> cells = new List<Cell>();
+        public Dictionary<int, Cell> cellIndexMap = new Dictionary<int, Cell>();
 
-        public Map(int _faceWidth, int _height, int _faceCount = 4) {
-            faceWidth = _faceWidth;
-            height = _height;
-            faceCount = _faceCount;
-            width = faceWidth * _faceCount;
-            landHeight = _height / 2;
-            cells = new Cell[width * height];
+        public Map(MapData _data) {
+            if (_data != null) {
+                Deserilize(_data);
+            }
         }
 
-        public void SetCell(int _x, int _y, int _branchId, int _branchCellId, int _hp, int _value) {
+//        public Map(int _faceWidth, int _height, int _faceCount = 4) {
+//            faceWidth = _faceWidth;
+//            height = _height;
+//            faceCount = _faceCount;
+//            width = faceWidth * _faceCount;
+//            landHeight = _height / 2;
+//            cells = new Cell[width * height];
+//        }
+
+        public void Deserilize(MapData _data) {
+            this.width = _data.width;
+            this.height = _data.height;
+            this.cells = _data.cells;
+
+//            cells = new Cell[width * height];
+            cellIndexMap.Clear();
+            for (int i = 0; i < _data.cells.Count; ++i) {
+                Cell cell = _data.cells[i];
+                cellIndexMap.Add(GetCellIndex(cell.x, cell.y), cell);
+            }
+        }
+
+//        public MapData Serilize() {
+//            MapData data = ScriptableObject.CreateInstance<MapData>();
+//            data.width = width;
+//            data.height = height;
+//            data.cells = cells;
+//            return data;
+//        }
+
+        public void SetCell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
             if (_x < 0 || _x >= width || _y < 0 || _y >= height) {
                 Debug.LogError("Cell out of range: " + _x + "  " + _y);
                 return;
             }
-            Cell cell = new Cell(_branchId, _branchCellId, _hp, _value);
-            cells[GetCellIndex(_x, _y)] = cell;
+            int index = GetCellIndex(_x, _y);
+            Cell cell;
+            if (!cellIndexMap.TryGetValue(index, out cell)) {
+                cell = new Cell(_x, _y, _type, _branchId, _groupId, _hp, _value);
+                cells.Add(cell);
+                cellIndexMap.Add(index, cell);
+            }
+            else {
+                cell.Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
+            }
+//            cells[GetCellIndex(_x, _y)] = cell;
         }
+
+        public void RemoveCell(int _x, int _y) {
+            if (_x < 0 || _x >= width || _y < 0 || _y >= height) {
+                Debug.LogError("Cell out of range: " + _x + "  " + _y);
+                return;
+            }
+            int index = GetCellIndex(_x, _y);
+            if (cellIndexMap.ContainsKey(index)) {
+                cells.Remove(cellIndexMap[index]);
+                cellIndexMap.Remove(index);
+            }
+        }
+
+        public Cell GetCell(int _x, int _y) {
+            if (_x < 0 || _x >= width || _y < 0 || _y >= height) {
+                Debug.LogError("Cell out of range: " + _x + "  " + _y);
+                return null;
+            }
+            int index = GetCellIndex(_x, _y);
+            Cell cell = null;
+            cellIndexMap.TryGetValue(index, out cell);
+            return cell;
+        }
+
+//        public bool IsCellEmpty(int _x, int _y) {
+//            return GetCell(_x, _y) == null;
+//        }
 
         public int GetFaceIndex(int _x) {
             return _x / faceWidth;
