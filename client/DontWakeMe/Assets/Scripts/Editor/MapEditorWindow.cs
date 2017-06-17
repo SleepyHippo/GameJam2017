@@ -17,6 +17,7 @@ public class MapEditorWindow : EditorWindow {
     private int groupId;
     private int value;
     private int hp;
+    private int style;
 
     private GameObject MapBGQuad {
         get {
@@ -97,15 +98,15 @@ public class MapEditorWindow : EditorWindow {
 //        GUILayout.Label("G: Move Spawner");
 //        GUILayout.Label("A: Add mob");
         GUILayout.Label("Current:\n" + currentCellType);
-        if (GUILayout.Button("树根(Root)")) {
-            currentCellType = CellType.Root;
-        }
+//        if (GUILayout.Button("树根(Root)")) {
+//            currentCellType = CellType.Root;
+//        }
         if (GUILayout.Button("树枝(Branch)")) {
             currentCellType = CellType.Branch;
         }
-        if (GUILayout.Button("楼梯(Ladder)")) {
-            currentCellType = CellType.Ladder;
-        }
+//        if (GUILayout.Button("楼梯(Ladder)")) {
+//            currentCellType = CellType.Ladder;
+//        }
         if (GUILayout.Button("道具(Item)")) {
             currentCellType = CellType.Item;
         }
@@ -114,12 +115,14 @@ public class MapEditorWindow : EditorWindow {
             groupId = DrawIntField("GroupID", groupId, 1, 40);
             value = DrawIntField("Value", value, 1, 99);
             hp = DrawIntField("Hp", hp, 0, 100);
+            style = DrawIntField("Style", style, 0, 2);
         }
         else {
             branchId = 0;
             groupId = 0;
             value = 0;
             hp = 0;
+            style = 0;
         }
         //        scrollViewPosition = GUILayout.BeginScrollView(scrollViewPosition, false, true);
         //        for (int i = 0; i < MetaManager.Instance.Monster.Count; ++i)
@@ -182,7 +185,7 @@ public class MapEditorWindow : EditorWindow {
             if (e.type == EventType.keyDown && e.keyCode == KeyCode.A) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
-                MapContainer.Map.SetCell(x, y, currentCellType, branchId, groupId, hp, value);
+                MapContainer.Map.SetCell(x, y, currentCellType, branchId, groupId, hp, value, style);
                 MapContainer.RefreshCell(x, y);
                 e.Use();
                 EditorSceneManager.MarkAllScenesDirty();
@@ -196,6 +199,7 @@ public class MapEditorWindow : EditorWindow {
                     groupId = cell.groupId;
                     value = cell.value;
                     hp = cell.hp;
+                    style = cell.style;
                     Repaint();
                 }
                 else {
@@ -210,11 +214,75 @@ public class MapEditorWindow : EditorWindow {
                 e.Use();
                 EditorSceneManager.MarkAllScenesDirty();
             }
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.U) {
+                int x = Mathf.RoundToInt(mouseSelectPosition.x);
+                int y = Mathf.RoundToInt(mouseSelectPosition.y);
+                Cell cell = MapContainer.Map.GetCell(x, y);
+                if (cell != null) {
+                    cell.style = 0;
+                    Repaint();
+                    MapContainer.RefreshCell(x, y);
+                    e.Use();
+                    EditorSceneManager.MarkAllScenesDirty();
+                }
+            }
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.I) {
+                int x = Mathf.RoundToInt(mouseSelectPosition.x);
+                int y = Mathf.RoundToInt(mouseSelectPosition.y);
+                Cell cell = MapContainer.Map.GetCell(x, y);
+                if (cell != null) {
+                    cell.style = 1;
+                    Repaint();
+                    MapContainer.RefreshCell(x, y);
+                    e.Use();
+                    EditorSceneManager.MarkAllScenesDirty();
+                }
+            }
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.O) {
+                int x = Mathf.RoundToInt(mouseSelectPosition.x);
+                int y = Mathf.RoundToInt(mouseSelectPosition.y);
+                Cell cell = MapContainer.Map.GetCell(x, y);
+                if (cell != null) {
+                    cell.style = 2;
+                    Repaint();
 
-            //            if (e.type == EventType.keyUp && e.keyCode == KeyCode.A) {
-            //                
-            //            }
-            //
+                    MapContainer.RefreshCell(x, y);
+                    e.Use();
+                    EditorSceneManager.MarkAllScenesDirty();
+                }
+            }
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.J) {
+                int x = Mathf.RoundToInt(mouseSelectPosition.x);
+                int y = Mathf.RoundToInt(mouseSelectPosition.y);
+                Cell cell = MapContainer.Map.GetCell(x, y);
+                if (cell != null) {
+                    Group group;
+                    if (MapContainer.Map.upTree.branchGroupMap.TryGetValue(cell.nodeId, out group)) {
+                        for (int i = 0; i < group.cells.Count; ++i) {
+                            group.cells[i].hp = 0;
+                        }
+                    }
+                    Repaint();
+                    e.Use();
+                    EditorSceneManager.MarkAllScenesDirty();
+                }
+            }
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.K) {
+                int x = Mathf.RoundToInt(mouseSelectPosition.x);
+                int y = Mathf.RoundToInt(mouseSelectPosition.y);
+                Cell cell = MapContainer.Map.GetCell(x, y);
+                if (cell != null) {
+                    Group group;
+                    if (MapContainer.Map.upTree.branchGroupMap.TryGetValue(cell.nodeId, out group)) {
+                        for (int i = 0; i < group.cells.Count; ++i) {
+                            group.cells[i].hp = 100;
+                        }
+                    }
+                    Repaint();
+                    e.Use();
+                    EditorSceneManager.MarkAllScenesDirty();
+                }
+            }
             SceneView.RepaintAll();
         }
     }
@@ -240,7 +308,7 @@ public class MapEditorWindow : EditorWindow {
 
     void RemoveAllCellObject() {
         int childCount = MapContainer.transform.childCount;
-        for (int i = childCount-1; i >= 0; --i) {
+        for (int i = childCount - 1; i >= 0; --i) {
             DestroyImmediate(MapContainer.transform.GetChild(i).gameObject);
         }
         MapContainer.ClearMap();
@@ -253,6 +321,7 @@ public class MapEditorWindow : EditorWindow {
         MapBGQuad.transform.localScale = new Vector3(map.width, map.height, 2);
 
         MapContainer.DrawMap();
+        MapContainer.Map.InitTree();
     }
 
 //    void ImportMapData() {

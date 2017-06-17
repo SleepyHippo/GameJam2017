@@ -55,13 +55,15 @@ namespace DWM {
         /// </summary>
         public int hp;
 
-        public Cell(Cell other) : this(other.x, other.y, other.type, other.branchId, other.groupId, other.hp, other.value) { }
+        public int style;
 
-        public Cell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
-            Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
+        public Cell(Cell other) : this(other.x, other.y, other.type, other.branchId, other.groupId, other.hp, other.value, other.style) { }
+
+        public Cell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value, int _style) {
+            Set(_x, _y, _type, _branchId, _groupId, _hp, _value, _style);
         }
 
-        public void Set(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
+        public void Set(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value, int _style) {
             this.x = _x;
             this.y = _y;
             this.type = _type;
@@ -71,6 +73,7 @@ namespace DWM {
             //            this.owner = _owner;
             this.hp = _hp;
             this.value = _value;
+            this.style = _style;
         }
     }
 
@@ -116,7 +119,7 @@ namespace DWM {
             while (branch.groups.Count < _cell.groupId) {
                 branch.groups.Add(new Group());
             }
-            Group group = branch.groups[_cell.groupId];
+            Group group = branch.groups[_cell.groupId - 1];
             group.branchGroupId = _cell.nodeId;
             group.groupId = _cell.groupId;
             group.value = _cell.value;
@@ -185,7 +188,7 @@ namespace DWM {
 //            return data;
 //        }
 
-        public void SetCell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value) {
+        public void SetCell(int _x, int _y, CellType _type, int _branchId, int _groupId, int _hp, int _value, int _style) {
             if (_x < 0 || _x >= width || _y < 0 || _y >= height) {
                 Debug.LogError("Cell out of range: " + _x + "  " + _y);
                 return;
@@ -193,12 +196,12 @@ namespace DWM {
             int index = GetCellIndex(_x, _y);
             Cell cell;
             if (!cellIndexMap.TryGetValue(index, out cell)) {
-                cell = new Cell(_x, _y, _type, _branchId, _groupId, _hp, _value);
+                cell = new Cell(_x, _y, _type, _branchId, _groupId, _hp, _value, _style);
                 cells.Add(cell);
                 cellIndexMap.Add(index, cell);
             }
             else {
-                cell.Set(_x, _y, _type, _branchId, _groupId, _hp, _value);
+                cell.Set(_x, _y, _type, _branchId, _groupId, _hp, _value, _style);
             }
 //            cells[GetCellIndex(_x, _y)] = cell;
         }

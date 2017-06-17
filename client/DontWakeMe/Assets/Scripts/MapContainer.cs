@@ -23,10 +23,10 @@ namespace DWM {
         [Range(-100, 0)]
         public int digValue = -10;
 
-        public GameObject dirtPrefab;
-        public GameObject rootPrefab;
-        public GameObject branchPrefab;
-        public GameObject ladderPrefab;
+//        public GameObject dirtPrefab;
+        public GameObject[] rootPrefab;
+        public GameObject[] branchPrefab;
+//        public GameObject ladderPrefab;
         public GameObject itemPrefab;
 
         public bool showGizmos = true;
@@ -123,14 +123,14 @@ namespace DWM {
             GameObject cellObject = null;
             switch (_cell.type) {
                 case CellType.Root:
-                    cellObject = Object.Instantiate(rootPrefab);
+                    cellObject = Object.Instantiate(rootPrefab[_cell.style]);
                     break;
                 case CellType.Branch:
-                    cellObject = Object.Instantiate(branchPrefab);
+                    cellObject = Object.Instantiate(branchPrefab[_cell.style]);
                     break;
-                case CellType.Ladder:
-                    cellObject = Object.Instantiate(ladderPrefab);
-                    break;
+//                case CellType.Ladder:
+//                    cellObject = Object.Instantiate(ladderPrefab);
+//                    break;
                 case CellType.Item:
                     cellObject = Object.Instantiate(itemPrefab);
                     break;
@@ -159,21 +159,21 @@ namespace DWM {
             }
         }
 
-        [ContextMenu("DebugDrawDirt")]
-        void DebugDrawDirt() {
-            int totalWidth = data.width;
-            GameObject root = GameObject.Find("_DirtRoot");
-            if (root == null) {
-                root = new GameObject("_DirtRoot");
-            }
-            for (int x = 0; x < totalWidth; ++x) {
-                for (int y = 0; y < data.height / 2; ++y) {
-                    GameObject.Instantiate(dirtPrefab, new Vector3(x, y, 0), Quaternion.identity).transform.SetParent(root.transform);
-//                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-//                    cube.transform.position = new Vector3(x, y, 0);
-                }
-            }
-        }
+//        [ContextMenu("DebugDrawDirt")]
+//        void DebugDrawDirt() {
+//            int totalWidth = data.width;
+//            GameObject root = GameObject.Find("_DirtRoot");
+//            if (root == null) {
+//                root = new GameObject("_DirtRoot");
+//            }
+//            for (int x = 0; x < totalWidth; ++x) {
+//                for (int y = 0; y < data.height / 2; ++y) {
+//                    GameObject.Instantiate(dirtPrefab, new Vector3(x, y, 0), Quaternion.identity).transform.SetParent(root.transform);
+////                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+////                    cube.transform.position = new Vector3(x, y, 0);
+//                }
+//            }
+//        }
 
         void OnDrawGizmos() {
             if (data != null && showGizmos) {
