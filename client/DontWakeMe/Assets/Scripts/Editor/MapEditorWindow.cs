@@ -124,6 +124,42 @@ public class MapEditorWindow : EditorWindow {
             hp = 0;
             style = 0;
         }
+
+        if (GUILayout.Button("Swap Root/Branch")) {
+            for (int i = 0; i < MapContainer.Map.cells.Count; i++) {
+                Cell cell = MapContainer.Map.cells[i];
+                if (cell.type == CellType.Root) {
+                    cell.type = CellType.Branch;
+                }
+                else if (cell.type == CellType.Branch) {
+                    cell.type = CellType.Root;
+                }
+                MapContainer.RefreshCell(cell.x, cell.y);
+            }
+        }
+        if (GUILayout.Button("复制上面到下面")) {
+            //清空下面的
+            for (int i = 0; i < MapContainer.Map.cells.Count; i++) {
+                Cell cell = MapContainer.Map.cells[i];
+                if (cell.y < MapContainer.Map.landHeight) {
+                    MapContainer.Map.RemoveCell(cell.x, cell.y);
+                }
+            }
+            for (int i = 0; i < MapContainer.Map.cells.Count; i++) {
+                Cell cell = MapContainer.Map.cells[i];
+                int mirrorY = MapContainer.Map.height - 1 - cell.y;
+                CellType mirrorType = CellType.Branch;
+                if (cell.type == CellType.Root) {
+                    mirrorType = CellType.Branch;
+                }
+                else if (cell.type == CellType.Branch) {
+                    mirrorType = CellType.Root;
+                }
+                MapContainer.Map.SetCell(cell.x, mirrorY, mirrorType, cell.branchId, cell.groupId, cell.hp, cell.value, cell.style);
+            }
+            MapContainer.DrawMap();
+            MapContainer.Map.InitTree();
+        }
         //        scrollViewPosition = GUILayout.BeginScrollView(scrollViewPosition, false, true);
         //        for (int i = 0; i < MetaManager.Instance.Monster.Count; ++i)
         //        {
@@ -283,6 +319,7 @@ public class MapEditorWindow : EditorWindow {
                     EditorSceneManager.MarkAllScenesDirty();
                 }
             }
+            
             SceneView.RepaintAll();
         }
     }
