@@ -291,7 +291,7 @@ public class MapEditorWindow : EditorWindow {
 //        if (string.IsNullOrEmpty(path)) {
 //            return;
 //        }
-        string path = "F:/_Work/gitRepos/GameJam2017/client/DontWakeMe/Assets/StaticData/Resources/data.asset";
+        string path = "Assets/StaticData/Resources/data.asset";
         MapData mapData = ScriptableObject.CreateInstance<MapData>();
         mapData.width = MapContainer.Map.width;
         mapData.height = MapContainer.Map.height;
@@ -301,10 +301,10 @@ public class MapEditorWindow : EditorWindow {
             mapData.cells.Add(new Cell(cell));
         }
 //        mapData.cells = MapContainer.Map.cells;
-        AssetDatabase.CreateAsset(mapData, Utilities.GetAssetPath(path));
+        AssetDatabase.CreateAsset(mapData, path);
 //        Selection.activeObject = mapData;
         AssetDatabase.SaveAssets();
-        MapContainer.data = AssetDatabase.LoadAssetAtPath<MapData>(Utilities.GetAssetPath(path));
+        MapContainer.data = AssetDatabase.LoadAssetAtPath<MapData>(path);
     }
 
     int DrawIntField(string name, int value, int min, int max) {
