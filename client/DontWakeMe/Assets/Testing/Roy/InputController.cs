@@ -64,9 +64,6 @@ public class InputController : MonoBehaviour {
 
         if (IsUseLadder || playerType == PlayerType.Player_02) {
             GetComponent<CharacterController>().Move(new Vector3(0f, y * speed * Time.deltaTime, 0f));
-
-
-
         }
     }
 }

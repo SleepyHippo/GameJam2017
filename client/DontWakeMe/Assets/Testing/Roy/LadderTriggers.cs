@@ -13,7 +13,7 @@ public class LadderTriggers : MonoBehaviour {
     }
 
     void OnTriggerStay (Collider other) {
-        if (other.tag == "Player") return;
+        if (other.tag == "Player" || other.tag != "Root") return;
         other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
     }
 
