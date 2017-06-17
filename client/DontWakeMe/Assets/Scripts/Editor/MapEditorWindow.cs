@@ -138,6 +138,13 @@ public class MapEditorWindow : EditorWindow {
             }
         }
         if (GUILayout.Button("复制上面到下面")) {
+            //清空下面的
+            for (int i = 0; i < MapContainer.Map.cells.Count; i++) {
+                Cell cell = MapContainer.Map.cells[i];
+                if (cell.y < MapContainer.Map.landHeight) {
+                    MapContainer.Map.RemoveCell(cell.x, cell.y);
+                }
+            }
             for (int i = 0; i < MapContainer.Map.cells.Count; i++) {
                 Cell cell = MapContainer.Map.cells[i];
                 int mirrorY = MapContainer.Map.height - 1 - cell.y;
@@ -150,6 +157,8 @@ public class MapEditorWindow : EditorWindow {
                 }
                 MapContainer.Map.SetCell(cell.x, mirrorY, mirrorType, cell.branchId, cell.groupId, cell.hp, cell.value, cell.style);
             }
+            MapContainer.DrawMap();
+            MapContainer.Map.InitTree();
         }
         //        scrollViewPosition = GUILayout.BeginScrollView(scrollViewPosition, false, true);
         //        for (int i = 0; i < MetaManager.Instance.Monster.Count; ++i)
