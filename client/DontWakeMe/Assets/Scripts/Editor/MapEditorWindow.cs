@@ -295,7 +295,7 @@ public class MapEditorWindow : EditorWindow {
                     Group group;
                     if (MapContainer.Map.upTree.branchGroupMap.TryGetValue(cell.nodeId, out group)) {
                         for (int i = 0; i < group.cells.Count; ++i) {
-                            group.cells[i].hp = 0;
+                            hp = group.cells[i].hp = 0;
                         }
                     }
                     Repaint();
@@ -311,7 +311,7 @@ public class MapEditorWindow : EditorWindow {
                     Group group;
                     if (MapContainer.Map.upTree.branchGroupMap.TryGetValue(cell.nodeId, out group)) {
                         for (int i = 0; i < group.cells.Count; ++i) {
-                            group.cells[i].hp = 100;
+                            hp = group.cells[i].hp = 100;
                         }
                     }
                     Repaint();
