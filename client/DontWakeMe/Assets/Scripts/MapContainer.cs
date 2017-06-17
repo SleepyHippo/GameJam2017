@@ -97,10 +97,12 @@ namespace DWM {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
             Group group = Map.AddHp(x, y, waterValue);
-            for (int i = 0; i < group.cells.Count; ++i) {
-                Cell cell = group.cells[i];
-                //特效
-                RefreshCell(cell.x, cell.y);
+            if (group != null) {
+                for (int i = 0; i < group.cells.Count; ++i) {
+                    Cell cell = group.cells[i];
+                    //特效
+                    RefreshCell(cell.x, cell.y);
+                }
             }
         }
 
@@ -108,11 +110,12 @@ namespace DWM {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
             Group group = Map.AddHp(x, y, digValue);
-            for (int i = 0; i < group.cells.Count; ++i)
-            {
-                Cell cell = group.cells[i];
-                //特效
-                RefreshCell(cell.x, cell.y);
+            if (group != null) {
+                for (int i = 0; i < group.cells.Count; ++i) {
+                    Cell cell = group.cells[i];
+                    //特效
+                    RefreshCell(cell.x, cell.y);
+                }
             }
         }
 

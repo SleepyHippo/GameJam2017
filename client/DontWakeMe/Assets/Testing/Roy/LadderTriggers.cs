@@ -6,21 +6,29 @@ public class LadderTriggers : MonoBehaviour {
     private bool mIsPlayerUseLadder;
 
     void OnTriggerEnter (Collider other) {
-        if (other.tag != "Player") return;
-        other.GetComponent<InputController>().IsUseLadder = true;
-        other.GetComponent<InputController>().IsUseGravity = false;
-        mIsPlayerUseLadder = true;
+        if (other.CompareTag("Player")) {
+            other.GetComponent<InputController>().IsUseLadder = true;
+            other.GetComponent<InputController>().IsUseGravity = false;
+        }
+        else {
+            mIsPlayerUseLadder = true;
+            other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
+        }
+
     }
 
-    void OnTriggerStay (Collider other) {
-        if (other.tag == "Player" || other.tag != "Root") return;
-        other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
-    }
+//    void OnTriggerStay (Collider other) {
+//        if (other.CompareTag("Player") || other.CompareTag("Root")) return;
+//    }
 
     void OnTriggerExit (Collider other) {
-        if (other.tag != "Player") return;
-        other.GetComponent<InputController>().IsUseLadder = false;
-        other.GetComponent<InputController>().IsUseGravity = true;
-        mIsPlayerUseLadder = false;
+        if (other.CompareTag("Player")) {
+            other.GetComponent<InputController>().IsUseLadder = false;
+            other.GetComponent<InputController>().IsUseGravity = true;
+        }
+        else {
+            mIsPlayerUseLadder = false;
+            other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
+        }
     }
 }
