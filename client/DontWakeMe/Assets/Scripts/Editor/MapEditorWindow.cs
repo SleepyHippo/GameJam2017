@@ -85,7 +85,7 @@ public class MapEditorWindow : EditorWindow {
             && GUILayout.Button("Export data")) {
             ExportAllMapData();
         }
-        if (GUILayout.Button("Refresh")) {
+        if (GUILayout.Button("Reset(重置)")) {
             RemoveAllCellObject();
             Refresh();
             EditorSceneManager.MarkAllScenesDirty();
@@ -147,6 +147,8 @@ public class MapEditorWindow : EditorWindow {
         Repaint();
     }
 
+    private bool isPainting = false;
+
     void CustomSceneGUI(SceneView sceneView) {
         Vector3 mouseSelectPosition;
         if (Assets.GorGame.Editor.EditorUtils_Duke.GetMouseHitInfoInScene(sceneView, out _hitInfo, true, false)) {
@@ -177,7 +179,7 @@ public class MapEditorWindow : EditorWindow {
 
 
             //place current spawner at mouse
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.A) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.A) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 MapContainer.Map.SetCell(x, y, currentCellType, branchId, groupId, hp, value);
@@ -185,7 +187,7 @@ public class MapEditorWindow : EditorWindow {
                 e.Use();
                 EditorSceneManager.MarkAllScenesDirty();
             }
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.S) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.S) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 Cell cell = MapContainer.Map.GetCell(x, y);
@@ -200,7 +202,7 @@ public class MapEditorWindow : EditorWindow {
                     Debug.LogError("cell is null: " + x + " " + y);
                 }
             }
-            if (e.type == EventType.keyUp && e.keyCode == KeyCode.D) {
+            if (e.type == EventType.keyDown && e.keyCode == KeyCode.D) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
                 int y = Mathf.RoundToInt(mouseSelectPosition.y);
                 MapContainer.Map.RemoveCell(x, y);
@@ -280,21 +282,29 @@ public class MapEditorWindow : EditorWindow {
 //    }
 
     void ExportAllMapData() {
-        var path = EditorUtility.SaveFilePanel(
-            "Create MapMapEditorData",
-            "Assets/StaticData/Resources",
-            "data.asset",
-            "asset");
-        if (string.IsNullOrEmpty(path)) {
-            return;
-        }
+//        var path = EditorUtility.SaveFilePanel(
+//            "Create MapMapEditorData",
+//            "Assets/StaticData/Resources",
+//            "data.asset",
+//            "asset");
+//        Debug.Log(path);
+//        if (string.IsNullOrEmpty(path)) {
+//            return;
+//        }
+        string path = "Assets/StaticData/Resources/data.asset";
         MapData mapData = ScriptableObject.CreateInstance<MapData>();
         mapData.width = MapContainer.Map.width;
         mapData.height = MapContainer.Map.height;
-        mapData.cells = MapContainer.Map.cells;
-        AssetDatabase.CreateAsset(mapData, Utilities.GetAssetPath(path));
-        Selection.activeObject = mapData;
+        mapData.cells = new List<Cell>(MapContainer.Map.cells.Count);
+        for (int i = 0; i < MapContainer.Map.cells.Count; ++i) {
+            Cell cell = MapContainer.Map.cells[i];
+            mapData.cells.Add(new Cell(cell));
+        }
+//        mapData.cells = MapContainer.Map.cells;
+        AssetDatabase.CreateAsset(mapData, path);
+//        Selection.activeObject = mapData;
         AssetDatabase.SaveAssets();
+        MapContainer.data = AssetDatabase.LoadAssetAtPath<MapData>(path);
     }
 
     int DrawIntField(string name, int value, int min, int max) {
