@@ -6,6 +6,7 @@ using GoR.Framework;
 //using Assets.GorGame.Editor;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using Object = UnityEngine.Object;
 
 public class MapEditorWindow : EditorWindow {
@@ -85,7 +86,9 @@ public class MapEditorWindow : EditorWindow {
             ExportAllMapData();
         }
         if (GUILayout.Button("Refresh")) {
+            RemoveAllCellObject();
             Refresh();
+            EditorSceneManager.MarkAllScenesDirty();
         }
         //        GUILayout.Label("N: Create Spawner");
         if (!isSelectMapEditor) {
@@ -180,6 +183,7 @@ public class MapEditorWindow : EditorWindow {
                 MapContainer.Map.SetCell(x, y, currentCellType, branchId, groupId, hp, value);
                 MapContainer.RefreshCell(x, y);
                 e.Use();
+                EditorSceneManager.MarkAllScenesDirty();
             }
             if (e.type == EventType.keyUp && e.keyCode == KeyCode.S) {
                 int x = Mathf.RoundToInt(mouseSelectPosition.x);
@@ -202,11 +206,12 @@ public class MapEditorWindow : EditorWindow {
                 MapContainer.Map.RemoveCell(x, y);
                 MapContainer.RefreshCell(x, y);
                 e.Use();
+                EditorSceneManager.MarkAllScenesDirty();
             }
 
-//            if (e.type == EventType.keyUp && e.keyCode == KeyCode.A) {
-//                
-//            }
+            //            if (e.type == EventType.keyUp && e.keyCode == KeyCode.A) {
+            //                
+            //            }
             //
             SceneView.RepaintAll();
         }
@@ -229,6 +234,14 @@ public class MapEditorWindow : EditorWindow {
             SceneView sceneView = (SceneView) SceneView.sceneViews[0];
             sceneView.Focus();
         }
+    }
+
+    void RemoveAllCellObject() {
+        int childCount = MapContainer.transform.childCount;
+        for (int i = childCount-1; i >= 0; --i) {
+            DestroyImmediate(MapContainer.transform.GetChild(i).gameObject);
+        }
+        MapContainer.ClearMap();
     }
 
     void Refresh() {
