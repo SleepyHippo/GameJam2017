@@ -18,6 +18,7 @@ public class MapEditorWindow : EditorWindow {
     private int value;
     private int hp;
     private int style;
+    private bool showGizmos = false;
 
     private GameObject MapBGQuad {
         get {
@@ -160,6 +161,7 @@ public class MapEditorWindow : EditorWindow {
             MapContainer.DrawMap(false);
             MapContainer.Map.InitTree();
         }
+        showGizmos = EditorGUILayout.Toggle("ShowGizmos", showGizmos);
         //        scrollViewPosition = GUILayout.BeginScrollView(scrollViewPosition, false, true);
         //        for (int i = 0; i < MetaManager.Instance.Monster.Count; ++i)
         //        {
@@ -319,7 +321,13 @@ public class MapEditorWindow : EditorWindow {
                     EditorSceneManager.MarkAllScenesDirty();
                 }
             }
-            
+            if (showGizmos) {
+                List<Cell> cells = MapContainer.Map.cells;
+                for (int i = 0; i < cells.Count; ++i) {
+                    Cell cell = cells[i];
+                    Handles.Label(new Vector3(cell.x, cell.y, -3f), cell.branchId + " " + cell.groupId.ToString());
+                }
+            }
             SceneView.RepaintAll();
         }
     }

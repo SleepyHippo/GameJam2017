@@ -21,6 +21,7 @@ namespace DWM {
         public List<Cell> cells = new List<Cell>();
 
         public void AddHp(int _hp) {
+            hp = Mathf.Clamp(hp + _hp, 0, 100);
             for (int i = 0; i < cells.Count; ++i) {
                 cells[i].hp = Mathf.Clamp(cells[i].hp + _hp, 0, 100);
             }

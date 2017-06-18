@@ -99,7 +99,20 @@ namespace DWM {
         public void Water(Vector3 _position) {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
+            Cell waterCell = Map.GetCell(x, y);
+            if (waterCell == null || waterCell.hp == 100) {
+                return;
+            }
             Group group = Map.AddHp(x, y, waterValue);
+            if (group != null) {
+                for (int i = 0; i < group.cells.Count; ++i) {
+                    Cell cell = group.cells[i];
+                    //特效
+                    RefreshCell(cell.x, cell.y);
+                }
+            }
+            int mirrorY = map.height - y;
+            group = Map.AddHp(x, mirrorY, waterValue);
             if (group != null) {
                 for (int i = 0; i < group.cells.Count; ++i) {
                     Cell cell = group.cells[i];
@@ -112,7 +125,44 @@ namespace DWM {
         public void Dig(Vector3 _position) {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
+            Cell digCell = Map.GetCell(x, y);
+            if (digCell == null || digCell.hp == 0) {
+                return;
+            }
             Group group = Map.AddHp(x, y, digValue);
+            if (group.hp == 0) {
+                Branch nowBranch = Map.botTree.branchs.Find(b => b.branchId == digCell.branchId);
+                for (int groupIndex = group.groupId + 1; groupIndex < nowBranch.groups.Count; ++groupIndex) {
+                    Group nextGroup = nowBranch.groups[groupIndex];
+                    if (nextGroup.groupId > group.groupId)
+                    {
+                        nextGroup.AddHp(-100);
+                        for (int i = 0; i < nextGroup.cells.Count; ++i) {
+                            Cell cell = nextGroup.cells[i];
+                            //特效
+                            RefreshCell(cell.x, cell.y);
+                        }
+
+                        Group mirrorGroup = Map.upTree.branchGroupMap[nextGroup.branchGroupId];
+                        mirrorGroup.AddHp(-100);
+                        for (int i = 0; i < mirrorGroup.cells.Count; ++i) {
+                            Cell cell = mirrorGroup.cells[i];
+                            //特效
+                            RefreshCell(cell.x, cell.y);
+                        }
+                    }
+                }
+                return;
+            }
+            if (group != null) {
+                for (int i = 0; i < group.cells.Count; ++i) {
+                    Cell cell = group.cells[i];
+                    //特效
+                    RefreshCell(cell.x, cell.y);
+                }
+            }
+            int mirrorY = map.height - y;
+            group = Map.AddHp(x, mirrorY, digValue);
             if (group != null) {
                 for (int i = 0; i < group.cells.Count; ++i) {
                     Cell cell = group.cells[i];
@@ -131,13 +181,13 @@ namespace DWM {
                 case CellType.Root:
                     cellObject = Object.Instantiate(rootPrefab[_cell.style]);
                     if (Application.isPlaying) {
-                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100));
+                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
                     }
                     break;
                 case CellType.Branch:
                     cellObject = Object.Instantiate(branchPrefab[_cell.style]);
                     if (Application.isPlaying) {
-                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100));
+                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
                     }
                     break;
                 //                case CellType.Ladder:
