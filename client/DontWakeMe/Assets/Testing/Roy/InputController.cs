@@ -14,6 +14,7 @@ public class InputController : MonoBehaviour {
     public float waterDistance = 4;
     public float digDistance = 4;
     public Transform interactionPoint;
+    public int interactionSize = 2;
     public bool IsUseLadder { get; set; }
 
     public bool IsUseGravity { get; set; }
@@ -83,11 +84,11 @@ public class InputController : MonoBehaviour {
             if (Input.GetKey(KeyCode.Joystick1Button0)) {
                 if (isWater) {
                     Debug.Log("P1 Pee");
-                    mapContainer.Water(interactionPoint.position);
+                    Pee();
                 }
                 else {
                     Debug.Log("P1 Dig");
-                    mapContainer.Dig(interactionPoint.position);
+                    Dig();
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
             }
@@ -96,11 +97,11 @@ public class InputController : MonoBehaviour {
             if (Input.GetKey(KeyCode.Return)) {
                 if (isWater) {
                     Debug.Log("P2 Pee");
-                    mapContainer.Water(interactionPoint.position);
+                    Pee();
                 }
                 else {
                     Debug.Log("P2 Dig");
-                    mapContainer.Dig(interactionPoint.position);
+                    Dig();
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
             }
@@ -188,5 +189,41 @@ public class InputController : MonoBehaviour {
         //if (IsUseLadder || playerType == PlayerType.Player_02) {
         //    GetComponent<CharacterController>().Move(new Vector3(0f, y * speed * Time.deltaTime, 0f));
         //}
+    }
+
+    void Pee() {
+        bool done = mapContainer.Water(interactionPoint.position);
+        float centerX = interactionPoint.position.x;
+        float centerY = interactionPoint.position.y;
+        if (!done) {
+            for (int i = -interactionSize; i <= interactionSize; ++i) {
+                float x = centerX + i;
+                for (int j = -interactionSize; j <= interactionSize; ++j) {
+                    float y = centerY + j;
+                    done = mapContainer.Water(new Vector3(x, y, 0));
+                    if (done) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    void Dig() {
+        bool done = mapContainer.Dig(interactionPoint.position);
+        float centerX = interactionPoint.position.x;
+        float centerY = interactionPoint.position.y;
+        if (!done) {
+            for (int i = -interactionSize; i <= interactionSize; ++i) {
+                float x = centerX + i;
+                for (int j = -interactionSize; j <= interactionSize; ++j) {
+                    float y = centerY + j;
+                    done = mapContainer.Dig(new Vector3(x, y, 0));
+                    if (done) {
+                        return;
+                    }
+                }
+            }
+        }
     }
 }
