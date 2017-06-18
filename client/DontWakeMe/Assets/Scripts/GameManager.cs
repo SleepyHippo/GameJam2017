@@ -139,6 +139,12 @@ public class GameManager : MonoBehaviour {
     }
 
     void UpsideDown() {
+        p1Controller.isNowPause = true;
+        p2Controller.isNowPause = true;
+        p1Controller.gameObject.layer = 12;
+        p2Controller.gameObject.layer = 12;
+        StartCoroutine(RestartPlayer(2f));
+
         nowLeftSwitchTime = switchTime;
         earthManager.SwitchMode();
         upLadders.gameObject.SetActive(!upLadders.activeInHierarchy);
@@ -150,5 +156,10 @@ public class GameManager : MonoBehaviour {
 //        mapContainer.DrawMap(false);
         mapContainer.SwapAllCellType();
     }
-    
+
+    IEnumerator RestartPlayer(float _time) {
+        yield return new WaitForSeconds(_time);
+        p1Controller.isNowPause = false;
+        p2Controller.isNowPause = false;
+    }
 }

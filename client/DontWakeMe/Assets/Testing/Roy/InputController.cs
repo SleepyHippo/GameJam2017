@@ -25,6 +25,8 @@ public class InputController : MonoBehaviour {
 
     public PositionType positionType;
 
+    public bool isNowPause = false;
+
     #region 不要在意细节
     /// <summary>
     /// 和梯子没毛关系的别用
@@ -90,6 +92,9 @@ public class InputController : MonoBehaviour {
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
             }
+            else {
+                HideInteractionObject();
+            }
         }
         else {
             if (Input.GetKey(KeyCode.Return)) {
@@ -102,6 +107,9 @@ public class InputController : MonoBehaviour {
                     Dig();
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
+            }
+            else {
+                HideInteractionObject();
             }
         }
     }
@@ -173,11 +181,11 @@ public class InputController : MonoBehaviour {
         //    IsUseGravity = positionType != earthsManager.positionType;
 
         isWater = IsUseGravity;
-        if (IsUseGravity && gameObject.layer != 8) {
-            gameObject.layer = 8;
+        if (IsUseGravity) {
+            gameObject.layer = isNowPause ? 12 : 8;
         }
-        else if (!IsUseGravity && gameObject.layer != 9) {
-            gameObject.layer = 9;
+        else if (!IsUseGravity) {
+            gameObject.layer = isNowPause ? 12 : 9;
         }
 
         GetComponent<CharacterController>().Move((IsUseGravity == false) || IsUseLadder
@@ -190,6 +198,7 @@ public class InputController : MonoBehaviour {
     }
 
     void Pee () {
+        interactionPoint.gameObject.SetActive(true);
         bool done = mapContainer.Water(interactionPoint.position);
         float centerX = interactionPoint.position.x;
         float centerY = interactionPoint.position.y;
@@ -208,6 +217,7 @@ public class InputController : MonoBehaviour {
     }
 
     void Dig () {
+        interactionPoint.gameObject.SetActive(true);
         bool done = mapContainer.Dig(interactionPoint.position);
         float centerX = interactionPoint.position.x;
         float centerY = interactionPoint.position.y;
@@ -225,6 +235,9 @@ public class InputController : MonoBehaviour {
         }
     }
 
+    void HideInteractionObject() {
+        interactionPoint.gameObject.SetActive(false);
+    }
 
     void OnTriggerEnter (Collider other) {
         if (other.gameObject.layer != 16) return;
