@@ -10,22 +10,104 @@ public class GameManager : MonoBehaviour {
     public InputController p1Controller;
     public InputController p2Controller;
 
+    public float winRate = 0.75f;
+
     public Scrollbar winBar;
 
     public Text p1Score;
 
     public Text p2Score;
 
+    public Text winText;
+
+    private float totalScore;
+    private float winScore;
+    private float loseScore;
+
     // Use this for initialization
-    void Start() { }
-
-    // Update is called once per frame
-    void Update() { }
-
-    void StartGame() {
+    void Start() {
+        totalScore = CalculateTotalScore();
+        winScore = totalScore * winRate;
+        loseScore = totalScore - winScore;
+        winText.gameObject.SetActive(false);
     }
 
-    void CalculateScore() {
-        
+    // Update is called once per frame
+    void Update() {
+        UpdateScore(CalculateWaterScore());
+    }
+
+    void StartGame() { }
+
+    void UpdateScore(float _waterScore) {
+        if (p1Controller.isWater) {
+            if (_waterScore > winScore) {
+                //p1 win
+                ShowWin(true);
+            }
+            else if (_waterScore < loseScore) {
+                //p2 win
+                ShowWin(false);
+            }
+            else {
+                winBar.value = _waterScore - loseScore / winScore;
+            }
+            p1Score.text = _waterScore.ToString("0");
+            p2Score.text = (totalScore - _waterScore).ToString("0");
+        }
+        else {
+            if (_waterScore > winScore) {
+                //p2 win
+                ShowWin(false);
+            }
+            else if (_waterScore < loseScore) {
+                //p1 win
+                ShowWin(true);
+            }
+            else {
+                winBar.value = totalScore - _waterScore - loseScore / winScore;
+            }
+            p1Score.text = (winScore - _waterScore).ToString("0");
+            p2Score.text = _waterScore.ToString("0");
+        }
+    }
+
+    float CalculateTotalScore() {
+        float totalScore = 0;
+        var iter = mapContainer.Map.upTree.branchGroupMap.GetEnumerator();
+        while (iter.MoveNext()) {
+            Group group = iter.Current.Value;
+            totalScore += 100 * group.value;
+        }
+        return totalScore;
+    }
+
+    float CalculateWaterScore() {
+        float waterScore = 0;
+        if (p1Controller.isWater) {
+            var iter = mapContainer.Map.upTree.branchGroupMap.GetEnumerator();
+            while (iter.MoveNext()) {
+                Group group = iter.Current.Value;
+                waterScore += group.hp * group.value;
+            }
+        }
+        else {
+            var iter = mapContainer.Map.botTree.branchGroupMap.GetEnumerator();
+            while (iter.MoveNext()) {
+                Group group = iter.Current.Value;
+                waterScore += group.hp * group.value;
+            }
+        }
+        return waterScore;
+    }
+
+    void ShowWin(bool player1Win) {
+        if (player1Win) {
+            winText.text = "Player 1 wins~";
+        }
+        else {
+            winText.text = "Player 2 wins~";
+        }
+        winText.gameObject.SetActive(true);
     }
 }
