@@ -5,30 +5,37 @@ using UnityEngine;
 public class LadderTriggers : MonoBehaviour {
     private bool mIsPlayerUseLadder;
 
+    /// <summary>
+    /// 保存和梯子交接的碰撞体信息，当人物进入梯子时关闭碰撞体信息
+    /// </summary>
+    private Dictionary<int, Collider> roots = new Dictionary<int, Collider>();
+
     void OnTriggerEnter (Collider other) {
+        if (other.CompareTag("Root")) {
+            if (roots.ContainsKey(other.GetHashCode()) == false)
+                roots.Add(other.GetHashCode(), other);
+        }
+
         if (other.CompareTag("Player")) {
             other.GetComponent<InputController>().IsUseLadder = true;
             other.GetComponent<InputController>().IsUseGravity = false;
-        }
-        else {
             mIsPlayerUseLadder = true;
-            other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
+
+            foreach (var key in roots.Keys) {
+                roots[key].isTrigger = mIsPlayerUseLadder;
+            }
         }
-
     }
-
-//    void OnTriggerStay (Collider other) {
-//        if (other.CompareTag("Player") || other.CompareTag("Root")) return;
-//    }
 
     void OnTriggerExit (Collider other) {
         if (other.CompareTag("Player")) {
             other.GetComponent<InputController>().IsUseLadder = false;
             other.GetComponent<InputController>().IsUseGravity = true;
-        }
-        else {
             mIsPlayerUseLadder = false;
-            other.GetComponent<Collider>().isTrigger = mIsPlayerUseLadder;
+
+            foreach (var key in roots.Keys) {
+                roots[key].isTrigger = mIsPlayerUseLadder;
+            }
         }
     }
 }
