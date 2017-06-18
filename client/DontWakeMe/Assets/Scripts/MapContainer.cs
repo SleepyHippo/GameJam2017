@@ -181,7 +181,9 @@ namespace DWM {
                 case CellType.Root:
                     cellObject = Object.Instantiate(rootPrefab[_cell.style]);
                     if (Application.isPlaying) {
-                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
+                        Material m = cellObject.GetComponent<MeshRenderer>().material;
+                        m.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
+                        m.SetFloat("_Alpha", Mathf.Lerp(0, 1, _cell.hp / 100f));
                     }
                     break;
                 case CellType.Branch:
