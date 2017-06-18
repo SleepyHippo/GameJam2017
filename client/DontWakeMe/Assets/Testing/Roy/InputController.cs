@@ -21,6 +21,7 @@ public class InputController : MonoBehaviour {
 
     private DWM.MapContainer mapContainer;
     private EarthsManager earthsManager;
+    public ActionManager actionManager;
 
     public PositionType positionType;
 
@@ -37,6 +38,7 @@ public class InputController : MonoBehaviour {
         IsUseGravity = playerType != PlayerType.Player_02;
         mapContainer = FindObjectOfType<DWM.MapContainer>();
         earthsManager = FindObjectOfType<EarthsManager>();
+        //actionManager = GetComponentInChildren<ActionManager>();
     }
 
     // Update is called once per frame
@@ -45,6 +47,8 @@ public class InputController : MonoBehaviour {
         Move();
         DoPee();
         CheckLadderUseState();
+
+        actionManager.transform.position = new Vector3(transform.position.x + 1f, transform.position.y + 1f, transform.position.z);
     }
 
     private void CheckLadderUseState()
@@ -114,9 +118,11 @@ public class InputController : MonoBehaviour {
 
         if (x < 0) { // 左
             transform.eulerAngles = new Vector3(0, 180, 0);
+            actionManager.ChangeMaterial(earthsManager.positionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Left);
         }
         else if (x > 0) { // 右
             transform.eulerAngles = new Vector3(0, 0f, 0);
+            actionManager.ChangeMaterial(earthsManager.positionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Right);
         }
 
 
