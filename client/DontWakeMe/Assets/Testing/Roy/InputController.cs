@@ -38,6 +38,7 @@ public class InputController : MonoBehaviour {
         mapContainer = FindObjectOfType<DWM.MapContainer>();
         earthsManager = FindObjectOfType<EarthsManager>();
         //actionManager = GetComponentInChildren<ActionManager>();
+        actionManager.ChangeMaterial(positionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Left);
     }
 
     // Update is called once per frame
@@ -88,6 +89,7 @@ public class InputController : MonoBehaviour {
                     Debug.Log("P1 Dig");
                     mapContainer.Dig(interactionPoint.position);
                 }
+                actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
             }
         }
         else {
@@ -100,12 +102,19 @@ public class InputController : MonoBehaviour {
                     Debug.Log("P2 Dig");
                     mapContainer.Dig(interactionPoint.position);
                 }
+                actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
             }
         }
     }
 
+
+    private ActionManager.ActionDirection direction;
+
+    PositionType actionType;
     private void Move () {
         float x, y;
+        IsUseGravity = positionType != earthsManager.positionType;
+
         if (playerType == PlayerType.Player_01) {
             x = Input.GetAxis("LeftAnalogHorizontal");
             y = Input.GetAxis("LeftAnalogVertical");
@@ -115,13 +124,19 @@ public class InputController : MonoBehaviour {
             y = Input.GetAxis("Vertical");
         }
 
+
+        actionType = IsUseGravity ? PositionType.OnGround : PositionType.UnderGround;
+
+
         if (x < 0) { // 左
             transform.eulerAngles = new Vector3(0, 180, 0);
-            actionManager.ChangeMaterial(earthsManager.positionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Left);
+            actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Left);
+            direction = ActionManager.ActionDirection.Left;
         }
         else if (x > 0) { // 右
             transform.eulerAngles = new Vector3(0, 0f, 0);
-            actionManager.ChangeMaterial(earthsManager.positionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Right);
+            actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Move, ActionManager.ActionDirection.Right);
+            direction = ActionManager.ActionDirection.Right;
         }
 
 
@@ -158,7 +173,6 @@ public class InputController : MonoBehaviour {
         //if (positionType == PositionType.Down)
         //    IsUseGravity = positionType != earthsManager.positionType;
 
-        IsUseGravity = positionType != earthsManager.positionType;
         isWater = IsUseGravity;
         if (IsUseGravity && gameObject.layer != 8) {
             gameObject.layer = 8;

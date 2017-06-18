@@ -95,7 +95,41 @@ public class ActionManager : MonoBehaviour {
                 break;
             case PositionType.OnGround:
 
+                switch (_actionType) {
+                    case ActionType.Attack:
 
+                        switch (_actionDirection) {
+                            case ActionDirection.Left:
+                                meshRenderer.material = type_02_Attack_L[imageIndex];
+                                imageIndex++;
+                                if (imageIndex > 1) imageIndex = 0;
+                                break;
+                            case ActionDirection.Right:
+                                meshRenderer.material = type_02_Attack_R[imageIndex];
+                                imageIndex++;
+                                if (imageIndex > 1) imageIndex = 0;
+                                break;
+                        }
+
+
+                        break;
+                    case ActionType.Move:
+
+                        switch (_actionDirection) {
+                            case ActionDirection.Left:
+                                meshRenderer.material = type_02_Move_L[imageIndex];
+                                imageIndex++;
+                                if (imageIndex > 1) imageIndex = 0;
+                                break;
+                            case ActionDirection.Right:
+                                meshRenderer.material = type_02_Move_R[imageIndex];
+                                imageIndex++;
+                                if (imageIndex > 1) imageIndex = 0;
+                                break;
+                        }
+
+                        break;
+                }
 
                 break;
         }
