@@ -5,11 +5,15 @@
 		_Color("Color", Color) = (1,1,1,1)
 		_MainTex ("Texture", 2D) = "white" {}
 		_Intensity("Gray Intensity", range(0.0,1.0)) = 0
+		_Alpha("Alpha Intensity", range(0.0,1.0)) = 1.0
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
 		LOD 100
+
+		ZWrite Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -38,6 +42,7 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			uniform float _Intensity;
+			uniform float _Alpha;
 			
 			v2f vert (appdata v)
 			{
@@ -56,6 +61,7 @@
 				float g = dot(col.rgb, fixed3(_Intensity*0.22, 1 - _Intensity * 0.293, _Intensity * 0.071));
 				float b = dot(col.rgb, fixed3(_Intensity*0.22, _Intensity * 0.707, 1 - _Intensity * 0.929));
 				col.rgb = float3(r, g, b);
+				col.a = col.a * _Alpha;
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
