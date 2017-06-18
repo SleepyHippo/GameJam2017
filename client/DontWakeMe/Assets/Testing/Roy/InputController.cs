@@ -23,6 +23,10 @@ public class InputController : MonoBehaviour {
     private EarthsManager earthsManager;
     public ActionManager actionManager;
 
+    public AudioSource audioSource;
+    public AudioClip waterSound;
+    public AudioClip digSound;
+
     public PositionType positionType;
 
     public bool isNowPause = false;
@@ -83,11 +87,11 @@ public class InputController : MonoBehaviour {
         if (playerType == PlayerType.Player_01) {
             if (Input.GetKey(KeyCode.Joystick1Button0)) {
                 if (isWater) {
-                    Debug.Log("P1 Pee");
+//                    Debug.Log("P1 Pee");
                     Pee();
                 }
                 else {
-                    Debug.Log("P1 Dig");
+//                    Debug.Log("P1 Dig");
                     Dig();
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
@@ -99,11 +103,11 @@ public class InputController : MonoBehaviour {
         else {
             if (Input.GetKey(KeyCode.Return)) {
                 if (isWater) {
-                    Debug.Log("P2 Pee");
+//                    Debug.Log("P2 Pee");
                     Pee();
                 }
                 else {
-                    Debug.Log("P2 Dig");
+//                    Debug.Log("P2 Dig");
                     Dig();
                 }
                 actionManager.ChangeMaterial(actionType, ActionManager.ActionType.Attack, direction);
@@ -214,6 +218,8 @@ public class InputController : MonoBehaviour {
                 }
             }
         }
+        audioSource.clip = waterSound;
+        audioSource.Play();
     }
 
     void Dig () {
@@ -233,6 +239,8 @@ public class InputController : MonoBehaviour {
                 }
             }
         }
+        audioSource.clip = digSound;
+        audioSource.Play();
     }
 
     void HideInteractionObject() {
