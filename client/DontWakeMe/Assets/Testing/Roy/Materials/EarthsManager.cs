@@ -11,7 +11,7 @@ public class EarthsManager : MonoBehaviour {
     public Transform down2BottomRoot;
     public Transform top2UpRoot;
 
-    public PositionType positionType = PositionType.Down;
+    public PositionType positionType = PositionType.UnderGround;
 
     void Start () {
     }
@@ -32,7 +32,7 @@ public class EarthsManager : MonoBehaviour {
         //if (switch_1)
         //Moving_Mode_01();
 
-        positionType = switch_1 ? PositionType.Up : PositionType.Down;
+        positionType = switch_1 ? PositionType.OnGround : PositionType.UnderGround;
 
         group_01.GetComponent<EarthMotionController>()
             .MoveEarths(switch_1 ? top2UpRoot.position.y : up2DownRoot.position.y);
@@ -81,6 +81,6 @@ public class EarthsManager : MonoBehaviour {
 /// 土块在屏幕中的位置，也用来切换玩家重力控制开关
 /// </summary>
 public enum PositionType {
-    Up,
-    Down
+    OnGround,
+    UnderGround
 }
