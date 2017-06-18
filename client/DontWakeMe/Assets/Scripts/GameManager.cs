@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DWM;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour {
     public InputController p2Controller;
 
     public float winRate = 0.75f;
+    public float switchTime = 15f;
 
     public Scrollbar winBar;
 
@@ -18,26 +20,39 @@ public class GameManager : MonoBehaviour {
 
     public Text p2Score;
 
+    public Text timeText;
+
     public Text winText;
 
     private float totalScore;
     private float winScore;
     private float loseScore;
+    private float diffScore;
+    private float nowLeftSwitchTime;
 
     // Use this for initialization
     void Start() {
         totalScore = CalculateTotalScore();
         winScore = totalScore * winRate;
         loseScore = totalScore - winScore;
+        diffScore = winScore - loseScore;
         winText.gameObject.SetActive(false);
+        nowLeftSwitchTime = switchTime;
     }
 
     // Update is called once per frame
     void Update() {
+        nowLeftSwitchTime -= Time.deltaTime;
+        if (nowLeftSwitchTime < 0) {
+            nowLeftSwitchTime += switchTime;
+            earthManager.SwitchMode();
+        }
+        timeText.text = nowLeftSwitchTime.ToString("0.0");
         UpdateScore(CalculateWaterScore());
+        if (Input.GetKeyDown(KeyCode.F2)) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
-
-    void StartGame() { }
 
     void UpdateScore(float _waterScore) {
         if (p1Controller.isWater) {
@@ -50,7 +65,7 @@ public class GameManager : MonoBehaviour {
                 ShowWin(false);
             }
             else {
-                winBar.value = _waterScore - loseScore / winScore;
+                winBar.value = (_waterScore - loseScore) / diffScore;
             }
             p1Score.text = _waterScore.ToString("0");
             p2Score.text = (totalScore - _waterScore).ToString("0");
@@ -65,7 +80,7 @@ public class GameManager : MonoBehaviour {
                 ShowWin(true);
             }
             else {
-                winBar.value = totalScore - _waterScore - loseScore / winScore;
+                winBar.value = (winScore - _waterScore) / diffScore;
             }
             p1Score.text = (winScore - _waterScore).ToString("0");
             p2Score.text = _waterScore.ToString("0");
@@ -104,10 +119,13 @@ public class GameManager : MonoBehaviour {
     void ShowWin(bool player1Win) {
         if (player1Win) {
             winText.text = "Player 1 wins~";
+            winBar.value = 1;
         }
         else {
             winText.text = "Player 2 wins~";
+            winBar.value = 0;
         }
         winText.gameObject.SetActive(true);
     }
+    
 }

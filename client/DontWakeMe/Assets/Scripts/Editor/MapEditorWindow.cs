@@ -325,7 +325,7 @@ public class MapEditorWindow : EditorWindow {
                 List<Cell> cells = MapContainer.Map.cells;
                 for (int i = 0; i < cells.Count; ++i) {
                     Cell cell = cells[i];
-                    Handles.Label(new Vector3(cell.x, cell.y, -3f), cell.branchId + " " + cell.groupId.ToString());
+                    Handles.Label(new Vector3(cell.x, cell.y, -3f), cell.hp.ToString());
                 }
             }
             SceneView.RepaintAll();
