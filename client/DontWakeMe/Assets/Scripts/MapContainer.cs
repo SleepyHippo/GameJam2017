@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace DWM {
-    [ExecuteInEditMode]
     public class MapContainer : MonoBehaviour {
 //        public int faceWidth;
 //        public int height;
@@ -47,7 +46,6 @@ namespace DWM {
 
         private List<GameObject> cellObjects = new List<GameObject>();
         private Dictionary<int, GameObject> cellObjectDic = new Dictionary<int, GameObject>();
-        private Dictionary<int, GameObject> branchGroupIdDic = new Dictionary<int, GameObject>();
 
         void Awake() {
             DrawMap();
@@ -74,13 +72,16 @@ namespace DWM {
         }
 
         public void ClearMap() {
-            int count = cellObjects != null ? cellObjects.Count : 0;
-            for (int i = 0; i < count; ++i) {
-                if (Application.isPlaying) {
-                    Destroy(cellObjects[i]);
+            int childCount = transform.childCount;
+            for (int i = childCount - 1; i >= 0; --i)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(transform.GetChild(i).gameObject);
                 }
-                else {
-                    DestroyImmediate(cellObjects[i]);
+                else
+                {
+                    DestroyImmediate(transform.GetChild(i).gameObject);
                 }
             }
             cellObjects.Clear();
