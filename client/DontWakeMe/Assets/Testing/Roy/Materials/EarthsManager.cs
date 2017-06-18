@@ -27,7 +27,7 @@ public class EarthsManager : MonoBehaviour {
 
     #region 第一第二交替使用
     private bool switch_1;
-    private void SwitchMode () {
+    public void SwitchMode () {
         switch_1 = !switch_1;
         //if (switch_1)
         //Moving_Mode_01();
