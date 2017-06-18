@@ -77,13 +77,26 @@ public class InputController : MonoBehaviour {
         if (playerType == PlayerType.Player_01) {
             if (Input.GetKey(KeyCode.Joystick1Button0)) {
                 if (isWater) {
-                    Debug.Log("Pee");
+                    Debug.Log("P1 Pee");
                     mapContainer.Water(interactionPoint.position);
+                }
+                else {
+                    Debug.Log("P1 Dig");
+                    mapContainer.Dig(interactionPoint.position);
                 }
             }
         }
         else {
-
+            if (Input.GetKey(KeyCode.Return)) {
+                if (isWater) {
+                    Debug.Log("P2 Pee");
+                    mapContainer.Water(interactionPoint.position);
+                }
+                else {
+                    Debug.Log("P2 Dig");
+                    mapContainer.Dig(interactionPoint.position);
+                }
+            }
         }
     }
 
@@ -140,6 +153,7 @@ public class InputController : MonoBehaviour {
         //    IsUseGravity = positionType != earthsManager.positionType;
 
         IsUseGravity = positionType != earthsManager.positionType;
+        isWater = IsUseGravity;
         if (IsUseGravity && gameObject.layer != 8) {
             gameObject.layer = 8;
         }
