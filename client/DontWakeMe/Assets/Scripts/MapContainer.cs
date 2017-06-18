@@ -176,6 +176,19 @@ namespace DWM {
             return true;
         }
 
+        public void SwapAllCellType() {
+            for (int i = 0; i < Map.cells.Count; i++) {
+                Cell cell = Map.cells[i];
+                if (cell.type == CellType.Root) {
+                    cell.type = CellType.Branch;
+                }
+                else if (cell.type == CellType.Branch) {
+                    cell.type = CellType.Root;
+                }
+                RefreshCell(cell.x, cell.y);
+            }
+        }
+
         public void RefreshAllAlpha() {
             for (int i = 0; i < map.cells.Count; ++i) {
                 Cell cell = map.cells[i];

@@ -145,8 +145,10 @@ public class GameManager : MonoBehaviour {
         botLadders.gameObject.SetActive(!botLadders.activeInHierarchy);
         upBG.transform.eulerAngles = new Vector3(0, 0, upBG.transform.eulerAngles.z + 180);
         botBG.transform.eulerAngles = new Vector3(0, 0, botBG.transform.eulerAngles.z + 180);
-        mapContainer.isReverse = !mapContainer.isReverse;
-        mapContainer.RefreshAllAlpha();
+//        mapContainer.isReverse = !mapContainer.isReverse;
+//        mapContainer.RefreshAllAlpha();
+//        mapContainer.DrawMap(false);
+        mapContainer.SwapAllCellType();
     }
     
 }
