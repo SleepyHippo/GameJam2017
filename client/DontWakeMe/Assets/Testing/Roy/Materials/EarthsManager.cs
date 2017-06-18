@@ -21,10 +21,23 @@ public class EarthsManager : MonoBehaviour {
     void Update () {
     }
 
+    void Reset () {
+        var v = group_01.GetComponent<EarthMotionController>().earthsList;
+        for (int i = 0; i < v.Count; i++) {
+            var t = v[i].earthsList;
+            for (int j = 0; j < t.Count; j++) {
+                t[j].gameObject.SetActive(true);
+            }
+        }
+    }
+
+
 
     #region 第一第二交替使用
     private bool switch_1;
     public void SwitchMode () {
+        Reset();
+
         switch_1 = !switch_1;
         //if (switch_1)
         //Moving_Mode_01();
@@ -34,9 +47,15 @@ public class EarthsManager : MonoBehaviour {
         group_01.GetComponent<EarthMotionController>()
             .MoveEarths(switch_1 ? top2UpRoot.position.y : up2DownRoot.position.y);
 
-
+        //StartCoroutine(PauseGame(5f));
         //else
         //    Moving_Mode_02();
+    }
+
+    private IEnumerator PauseGame (float _time) {
+        Time.timeScale = 0f;
+        yield return new WaitForSeconds(_time);
+        Time.timeScale = 1f;
     }
 
 

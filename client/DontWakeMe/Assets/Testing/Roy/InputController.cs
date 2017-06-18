@@ -52,10 +52,8 @@ public class InputController : MonoBehaviour {
         actionManager.transform.position = new Vector3(transform.position.x + 1f, transform.position.y + 1f, transform.position.z);
     }
 
-    private void CheckLadderUseState()
-    {
-        if (ladderUseOnly == 0)
-        {
+    private void CheckLadderUseState () {
+        if (ladderUseOnly == 0) {
             IsUseLadder = false;
         }
     }
@@ -191,7 +189,7 @@ public class InputController : MonoBehaviour {
         //}
     }
 
-    void Pee() {
+    void Pee () {
         bool done = mapContainer.Water(interactionPoint.position);
         float centerX = interactionPoint.position.x;
         float centerY = interactionPoint.position.y;
@@ -209,7 +207,7 @@ public class InputController : MonoBehaviour {
         }
     }
 
-    void Dig() {
+    void Dig () {
         bool done = mapContainer.Dig(interactionPoint.position);
         float centerX = interactionPoint.position.x;
         float centerY = interactionPoint.position.y;
@@ -225,5 +223,12 @@ public class InputController : MonoBehaviour {
                 }
             }
         }
+    }
+
+
+    void OnTriggerEnter (Collider other) {
+        if (other.gameObject.layer != 16) return;
+
+        other.gameObject.SetActive(false);
     }
 }
