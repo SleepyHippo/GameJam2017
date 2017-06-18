@@ -10,6 +10,10 @@ public class GameManager : MonoBehaviour {
     public EarthsManager earthManager;
     public InputController p1Controller;
     public InputController p2Controller;
+    public GameObject upLadders;
+    public GameObject botLadders;
+    public GameObject upBG;
+    public GameObject botBG;
 
     public float winRate = 0.75f;
     public float switchTime = 15f;
@@ -38,19 +42,25 @@ public class GameManager : MonoBehaviour {
         diffScore = winScore - loseScore;
         winText.gameObject.SetActive(false);
         nowLeftSwitchTime = switchTime;
+        upLadders.SetActive(true);
+        botLadders.SetActive(false);
+        upBG.transform.rotation = Quaternion.identity;
+        botBG.transform.rotation = Quaternion.identity;
     }
 
     // Update is called once per frame
     void Update() {
         nowLeftSwitchTime -= Time.deltaTime;
         if (nowLeftSwitchTime < 0) {
-            nowLeftSwitchTime += switchTime;
-            earthManager.SwitchMode();
+            UpsideDown();
         }
         timeText.text = nowLeftSwitchTime.ToString("0.0");
         UpdateScore(CalculateWaterScore());
         if (Input.GetKeyDown(KeyCode.F2)) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            UpsideDown();
         }
     }
 
@@ -126,6 +136,19 @@ public class GameManager : MonoBehaviour {
             winBar.value = 0;
         }
         winText.gameObject.SetActive(true);
+    }
+
+    void UpsideDown() {
+        nowLeftSwitchTime = switchTime;
+        earthManager.SwitchMode();
+        upLadders.gameObject.SetActive(!upLadders.activeInHierarchy);
+        botLadders.gameObject.SetActive(!botLadders.activeInHierarchy);
+        upBG.transform.eulerAngles = new Vector3(0, 0, upBG.transform.eulerAngles.z + 180);
+        botBG.transform.eulerAngles = new Vector3(0, 0, botBG.transform.eulerAngles.z + 180);
+//        mapContainer.isReverse = !mapContainer.isReverse;
+//        mapContainer.RefreshAllAlpha();
+//        mapContainer.DrawMap(false);
+        mapContainer.SwapAllCellType();
     }
     
 }

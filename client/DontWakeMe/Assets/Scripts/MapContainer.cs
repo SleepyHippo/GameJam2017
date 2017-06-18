@@ -44,6 +44,8 @@ namespace DWM {
             }
         }
 
+        public bool isReverse = false;
+
         private List<GameObject> cellObjects = new List<GameObject>();
         private Dictionary<int, GameObject> cellObjectDic = new Dictionary<int, GameObject>();
 
@@ -174,6 +176,43 @@ namespace DWM {
             return true;
         }
 
+        public void SwapAllCellType() {
+            for (int i = 0; i < Map.cells.Count; i++) {
+                Cell cell = Map.cells[i];
+                if (cell.type == CellType.Root) {
+                    cell.type = CellType.Branch;
+                }
+                else if (cell.type == CellType.Branch) {
+                    cell.type = CellType.Root;
+                }
+                RefreshCell(cell.x, cell.y);
+            }
+        }
+
+        public void RefreshAllAlpha() {
+            for (int i = 0; i < map.cells.Count; ++i) {
+                Cell cell = map.cells[i];
+                GameObject obj = cellObjectDic[map.GetCellIndex(cell.x, cell.y)];
+                Material m = obj.GetComponent<MeshRenderer>().material;
+                if (cell.type == CellType.Root) {
+                    if (!isReverse) {
+                        m.SetFloat("_Alpha", Mathf.Lerp(0, 1, cell.hp / 100f));
+                    }
+                    else {
+                        m.SetFloat("_Alpha", 1);
+                    }
+                }
+                else if (cell.type == CellType.Branch) {
+                    if (isReverse) {
+                        m.SetFloat("_Alpha", Mathf.Lerp(0, 1, cell.hp / 100f));
+                    }
+                    else {
+                        m.SetFloat("_Alpha", 1);
+                    }
+                }
+            }
+        }
+
         void DrawCellObject(Cell _cell) {
             if (_cell == null) {
                 return;
@@ -185,13 +224,25 @@ namespace DWM {
                     if (Application.isPlaying) {
                         Material m = cellObject.GetComponent<MeshRenderer>().material;
                         m.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
-                        m.SetFloat("_Alpha", Mathf.Lerp(0, 1, _cell.hp / 100f));
+                        if (!isReverse) {
+                            m.SetFloat("_Alpha", Mathf.Lerp(0, 1, _cell.hp / 100f));
+                        }
+                        else {
+                            m.SetFloat("_Alpha", 1);
+                        }
                     }
                     break;
                 case CellType.Branch:
                     cellObject = Object.Instantiate(branchPrefab[_cell.style]);
                     if (Application.isPlaying) {
-                        cellObject.GetComponent<MeshRenderer>().material.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
+                        Material m = cellObject.GetComponent<MeshRenderer>().material;
+                        m.SetFloat("_Intensity", Mathf.Lerp(1, 0, _cell.hp / 100f));
+                        if (isReverse) {
+                            m.SetFloat("_Alpha", Mathf.Lerp(0, 1, _cell.hp / 100f));
+                        }
+                        else {
+                            m.SetFloat("_Alpha", 1);
+                        }
                     }
                     break;
                 //                case CellType.Ladder:
