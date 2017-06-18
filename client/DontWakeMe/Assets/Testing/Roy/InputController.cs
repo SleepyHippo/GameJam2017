@@ -19,12 +19,23 @@ public class InputController : MonoBehaviour {
     public bool IsUseGravity { get; set; }
 
     private DWM.MapContainer mapContainer;
+    private EarthsManager earthsManager;
+
+    public PositionType positionType;
+
+    #region 不要在意细节
+    /// <summary>
+    /// 和梯子没毛关系的别用
+    /// </summary>
+    public int ladderUseOnly;
+    #endregion
 
 
     // Use this for initialization
     void Start () {
         IsUseGravity = playerType != PlayerType.Player_02;
         mapContainer = FindObjectOfType<DWM.MapContainer>();
+        earthsManager = FindObjectOfType<EarthsManager>();
     }
 
     // Update is called once per frame
@@ -32,11 +43,19 @@ public class InputController : MonoBehaviour {
         UpdateInteractionPoint();
         Move();
         DoPee();
+        CheckLadderUseState();
     }
 
-    private void UpdateInteractionPoint() {
-        if (isWater)
+    private void CheckLadderUseState()
+    {
+        if (ladderUseOnly == 0)
         {
+            IsUseLadder = false;
+        }
+    }
+
+    private void UpdateInteractionPoint () {
+        if (isWater) {
             interactionPoint.transform.position = transform.position + Vector3.down * waterDistance;
         }
         else {
@@ -64,11 +83,11 @@ public class InputController : MonoBehaviour {
             }
         }
         else {
-            
+
         }
     }
 
-    private void Move() {
+    private void Move () {
         float x, y;
         if (playerType == PlayerType.Player_01) {
             x = Input.GetAxis("LeftAnalogHorizontal");
@@ -79,40 +98,56 @@ public class InputController : MonoBehaviour {
             y = Input.GetAxis("Vertical");
         }
 
-
-        if (x < 0 && y < 0) { // 左上
-            transform.eulerAngles = new Vector3(0, 0, 45f);
-        }
-        else if (x < 0 && y > 0) { // 左下
-            transform.eulerAngles = new Vector3(0, 0, -45f);
-        }
-        else if (x > 0 && y < 0) { // 左下
-            transform.eulerAngles = new Vector3(0, 0, -215f);
-        }
-        else if (x > 0 && y > 0) { // 左下
-            transform.eulerAngles = new Vector3(0, 0, -135f);
-        }
-
-        else if (x < 0) { // 左
-            transform.eulerAngles = new Vector3(0, 0, 0);
+        if (x < 0) { // 左
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
         else if (x > 0) { // 右
-            transform.eulerAngles = new Vector3(0, 180f, 0);
-        }
-        else if (y < 0) { // 上
-            transform.eulerAngles = new Vector3(0, 0, 90f);
-        }
-        else if (y > 0) { // 下
-            transform.eulerAngles = new Vector3(0, 0, 270f);
+            transform.eulerAngles = new Vector3(0, 0f, 0);
         }
 
-        var g = gravity;
 
-        if (IsUseGravity == false) g = 0f;
-        GetComponent<CharacterController>().Move(new Vector3(x * speed * Time.deltaTime, -g * Time.deltaTime, 0f));
+        //if (x < 0 && y < 0) { // 左上
+        //    transform.eulerAngles = new Vector3(0, 0, 45f);
+        //}
+        //else if (x < 0 && y > 0) { // 左下
+        //    transform.eulerAngles = new Vector3(0, 0, -45f);
+        //}
+        //else if (x > 0 && y < 0) { // 左下
+        //    transform.eulerAngles = new Vector3(0, 0, -215f);
+        //}
+        //else if (x > 0 && y > 0) { // 左下
+        //    transform.eulerAngles = new Vector3(0, 0, -135f);
+        //}
 
-        if (IsUseLadder || playerType == PlayerType.Player_02) {
-            GetComponent<CharacterController>().Move(new Vector3(0f, y * speed * Time.deltaTime, 0f));
-        }
+        //else if (x < 0) { // 左
+        //    transform.eulerAngles = new Vector3(0, 0, 0);
+        //}
+        //else if (x > 0) { // 右
+        //    transform.eulerAngles = new Vector3(0, 180f, 0);
+        //}
+        //else if (y < 0) { // 上
+        //    transform.eulerAngles = new Vector3(0, 0, 90f);
+        //}
+        //else if (y > 0) { // 下
+        //    transform.eulerAngles = new Vector3(0, 0, 270f);
+        //}
+
+        // 别管这里是啥逻辑，先用着
+        //if (positionType == PositionType.Up)
+        //    IsUseGravity = positionType != earthsManager.positionType;
+
+        //if (positionType == PositionType.Down)
+        //    IsUseGravity = positionType != earthsManager.positionType;
+
+        IsUseGravity = positionType != earthsManager.positionType;
+
+
+        GetComponent<CharacterController>().Move((IsUseGravity == false) || IsUseLadder
+            ? new Vector3(x * speed * Time.deltaTime, y * speed * Time.deltaTime, 0f)
+            : new Vector3(x * speed * Time.deltaTime, -gravity * Time.deltaTime, 0f));
+
+        //if (IsUseLadder || playerType == PlayerType.Player_02) {
+        //    GetComponent<CharacterController>().Move(new Vector3(0f, y * speed * Time.deltaTime, 0f));
+        //}
     }
 }
