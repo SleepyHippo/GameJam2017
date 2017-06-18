@@ -19,9 +19,6 @@ public class EarthsManager : MonoBehaviour {
 
 
     void Update () {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            SwitchMode();
-        }
     }
 
 
