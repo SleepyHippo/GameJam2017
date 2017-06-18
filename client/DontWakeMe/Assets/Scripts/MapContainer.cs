@@ -96,12 +96,12 @@ namespace DWM {
             DrawCellObject(cell);
         }
 
-        public void Water(Vector3 _position) {
+        public bool Water(Vector3 _position) {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
             Cell waterCell = Map.GetCell(x, y);
             if (waterCell == null || waterCell.hp == 100) {
-                return;
+                return false;
             }
             Group group = Map.AddHp(x, y, waterValue);
             if (group != null) {
@@ -120,14 +120,15 @@ namespace DWM {
                     RefreshCell(cell.x, cell.y);
                 }
             }
+            return true;
         }
 
-        public void Dig(Vector3 _position) {
+        public bool Dig(Vector3 _position) {
             int x = Mathf.RoundToInt(_position.x);
             int y = Mathf.RoundToInt(_position.y);
             Cell digCell = Map.GetCell(x, y);
             if (digCell == null || digCell.hp == 0) {
-                return;
+                return false;
             }
             Group group = Map.AddHp(x, y, digValue);
             if (group.hp == 0) {
@@ -152,7 +153,7 @@ namespace DWM {
                         }
                     }
                 }
-                return;
+                return true;
             }
             if (group != null) {
                 for (int i = 0; i < group.cells.Count; ++i) {
@@ -170,6 +171,7 @@ namespace DWM {
                     RefreshCell(cell.x, cell.y);
                 }
             }
+            return true;
         }
 
         void DrawCellObject(Cell _cell) {
