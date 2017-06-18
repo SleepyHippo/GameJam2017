@@ -157,7 +157,7 @@ public class MapEditorWindow : EditorWindow {
                 }
                 MapContainer.Map.SetCell(cell.x, mirrorY, mirrorType, cell.branchId, cell.groupId, cell.hp, cell.value, cell.style);
             }
-            MapContainer.DrawMap();
+            MapContainer.DrawMap(false);
             MapContainer.Map.InitTree();
         }
         //        scrollViewPosition = GUILayout.BeginScrollView(scrollViewPosition, false, true);

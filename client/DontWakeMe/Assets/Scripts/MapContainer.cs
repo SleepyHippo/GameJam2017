@@ -59,11 +59,13 @@ namespace DWM {
             Map.Deserilize(data);
         }
 
-        public void DrawMap() {
+        public void DrawMap(bool _loadData = true) {
             if (data == null) {
                 return;
             }
-            Refresh();
+            if (_loadData) {
+                Refresh();
+            }
             ClearMap();
             for (int i = 0; i < map.cells.Count; i++) {
                 Cell cell = map.cells[i];
