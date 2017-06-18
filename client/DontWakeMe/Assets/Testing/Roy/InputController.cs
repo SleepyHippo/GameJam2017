@@ -140,7 +140,12 @@ public class InputController : MonoBehaviour {
         //    IsUseGravity = positionType != earthsManager.positionType;
 
         IsUseGravity = positionType != earthsManager.positionType;
-
+        if (IsUseGravity && gameObject.layer != 8) {
+            gameObject.layer = 8;
+        }
+        else if (!IsUseGravity && gameObject.layer != 9) {
+            gameObject.layer = 9;
+        }
 
         GetComponent<CharacterController>().Move((IsUseGravity == false) || IsUseLadder
             ? new Vector3(x * speed * Time.deltaTime, y * speed * Time.deltaTime, 0f)
