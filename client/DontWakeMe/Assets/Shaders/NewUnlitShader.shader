@@ -2,6 +2,7 @@
 {
 	Properties
 	{
+		_Color("Color", Color) = (1,1,1,1)
 		_MainTex ("Texture", 2D) = "white" {}
 		_Intensity("Gray Intensity", range(0.0,1.0)) = 0
 	}
@@ -33,6 +34,7 @@
 				float4 vertex : SV_POSITION;
 			};
 
+			float4 _Color;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			uniform float _Intensity;
@@ -49,7 +51,7 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv);
+				fixed4 col = tex2D(_MainTex, i.uv) * UNITY_ACCESS_INSTANCED_PROP(_Color);
 				float r = dot(col.rgb, fixed3(1 - _Intensity*0.78, _Intensity * 0.707, _Intensity * 0.071));
 				float g = dot(col.rgb, fixed3(_Intensity*0.22, 1 - _Intensity * 0.293, _Intensity * 0.071));
 				float b = dot(col.rgb, fixed3(_Intensity*0.22, _Intensity * 0.707, 1 - _Intensity * 0.929));
