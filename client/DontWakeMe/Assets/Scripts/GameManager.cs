@@ -136,6 +136,7 @@ public class GameManager : MonoBehaviour {
             winBar.value = 0;
         }
         winText.gameObject.SetActive(true);
+        StartCoroutine(RestartGame(2f));
     }
 
     void UpsideDown() {
@@ -161,5 +162,10 @@ public class GameManager : MonoBehaviour {
         yield return new WaitForSeconds(_time);
         p1Controller.isNowPause = false;
         p2Controller.isNowPause = false;
+    }
+
+    IEnumerator RestartGame(float _time) {
+        yield return new WaitForSeconds(_time);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
